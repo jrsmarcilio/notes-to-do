@@ -8,6 +8,6 @@ export const cardStyles: SxProps = {
   maxWidth: 800,
 };
 
-export const inputOutlined: SxProps = {
-  height: 12
+export const cardContent: SxProps = {
+
 }
