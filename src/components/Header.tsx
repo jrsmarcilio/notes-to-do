@@ -1,6 +1,5 @@
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import { headerStyles, typographyTitle } from '../../src/styles/components/Header'
+import { Box, Typography } from '@mui/material';
+import { headerStyles, typographyTitle } from '@/styles';
 
 export default function HeaderNotes() {
   return (

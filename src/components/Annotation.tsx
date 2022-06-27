@@ -1,19 +1,34 @@
-import moment from 'moment';
 import React from 'react';
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
-
-import Add from '@mui/icons-material/Add';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
-import { Grid, TextField, Box, Button, Card, CardActions, CardContent, Collapse, FormControl, IconButton, MenuItem, Select, Stack, Typography, styled, Alert, AlertTitle } from '@mui/material';
-
+import TurnedInIcon from '@mui/icons-material/TurnedIn';
+import TurnedInNotIcon from '@mui/icons-material/TurnedInNot';
+import {
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Collapse,
+  FormControl,
+  Grid,
+  IconButton,
+  MenuItem,
+  Select,
+  Stack,
+  styled,
+  TextField,
+  Tooltip,
+  Typography
+} from '@mui/material';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 
-import { ExpandMoreProps, InputsNotes, priorityEnum } from '../interfaces';
-import { cardStyles } from '../styles/components/Annotation';
-import { api } from '../services/api';
+import NoteContext from '@/context/notes';
+import { ExpandMoreProps, INotes, TypeNotes } from '@/interfaces';
+import { cardStyles } from '@/styles';
+
 
 const ExpandMore = styled((props: ExpandMoreProps) => {
   const { expand, ...other } = props;
@@ -26,67 +41,51 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
   }),
 }));
 
-export default function RecipeReviewCard({ annotation }: { annotation: InputsNotes }) {
-  const [expanded, setExpanded] = React.useState(false);
-  const [toastAlert, setToastAlert] = React.useState({ show: false, message: '', success: false });
-  const [noteData, setNoteData] = React.useState<InputsNotes>();
+export default function RecipeReviewCard({ annotation }: { annotation: INotes }) {
+  const { removeNote, createNote, updateNote } = React.useContext(NoteContext);
 
+  const [expanded, setExpanded] = React.useState(false);
   const handleExpandClick = () => setExpanded(!expanded);
 
-
-  const { register, handleSubmit, watch, control, setValue, getValues, formState: { errors } } = useForm<InputsNotes>({
+  const { register, handleSubmit, watch, control, setValue, getValues, formState: { errors } } = useForm<TypeNotes>({
     defaultValues: {
-      dueDate: new Date(Date.now()),
-      priority: "none"
+      id: annotation.id || "",
+      name: annotation.name,
+      isActive: annotation.isActive,
+      dueDate: new Date(annotation.dueDate || Date.now()),
+      priority: annotation.priority || "none",
+      notes: annotation.notes
     }
   });
 
-  React.useEffect(() => {
-    console.log('exect useEffect')
-    async function fetchNote() {
-      await api.post('notes', noteData)
-        .then((result: any) => setToastAlert({ show: true, message: result.message, success: true }))
-        .catch((error: any) => setToastAlert({ show: true, message: error.message, success: false }));
-    }
-    if (noteData?.id && toastAlert.show) fetchNote();
-
-  }, [noteData])
-
-  const onSubmit: SubmitHandler<InputsNotes> = async (data: InputsNotes) => {
-    data.dueDate = moment(data.dueDate).format('YYYY-MM-DD');
-    setNoteData(data);
+  const onSubmit: SubmitHandler<TypeNotes> =
+    (data: TypeNotes) => annotation.isActive ? updateNote(data) : createNote(data);
+ 
+  const CheckSyncIcon = () => {
+		const title: string = annotation.isActive ? 'Cloud Sync' : 'No Syncing Cloud';
+		const Icon = () => annotation.isActive ?  <TurnedInIcon /> : <TurnedInNotIcon />
+		const handleSyncNote = () => { setExpanded(true); handleSubmit(onSubmit); }
+    return (
+      <Tooltip title={title} placement="left-start">
+        <IconButton onClick={handleSyncNote}>
+          <Icon />
+        </IconButton>
+      </Tooltip>
+    )
   }
-
-  // Change Values
-  setValue("id", annotation.id);
-  setValue("name", annotation.name);
-
-
+  
   return (
     <React.Fragment>
-
-      {
-        toastAlert.show && toastAlert.success
-          ? <Alert severity="success"><AlertTitle>Success</AlertTitle>{toastAlert.message}</Alert>
-          : <Alert severity="error"><AlertTitle>Error</AlertTitle>{toastAlert.message}</Alert >
-      }
-
       <Card sx={cardStyles}>
-
         <CardActions disableSpacing>
-
-          <IconButton aria-label="add to favorites">
-            <Add />
-          </IconButton>
-
+          <CheckSyncIcon />
           <TextField
             {...register("name")}
-            defaultValue={getValues("name")}
+            defaultValue={getValues("name") || annotation.name}
             id="outlined-name"
             variant="outlined"
             InputProps={{ style: { height: 35 } }}
           />
-
           <ExpandMore
             expand={expanded}
             onClick={handleExpandClick}
@@ -102,9 +101,8 @@ export default function RecipeReviewCard({ annotation }: { annotation: InputsNot
             component="form"
             onSubmit={handleSubmit(onSubmit)}
           >
-
             <Grid container spacing={2}>
-
+              <input hidden defaultValue={getValues('id') || annotation.id} />
               <Grid item xs={6}>
                 <Typography paragraph>Notes</Typography>
                 <TextField
@@ -113,26 +111,23 @@ export default function RecipeReviewCard({ annotation }: { annotation: InputsNot
                   rows={9}
                   fullWidth
                   {...register("notes")}
-                  defaultValue={getValues("notes")}
+                  defaultValue={getValues("notes") || annotation.notes}
                 />
               </Grid>
-
               <Grid container item xs={6} direction="row">
-
                 <Grid item xs={12}>
                   <Typography paragraph>Due Date</Typography>
-
                   <Controller
                     control={control}
                     defaultValue={annotation.dueDate}
                     render={({ field: { onChange, value } }) => (
                       <LocalizationProvider
                         dateAdapter={AdapterMoment}
-                        adapterLocale={moment.locale("pt-br")}
+                        dateFormats={{ keyboardDate: 'dd MM yyyy' }}
                       >
                         <Stack spacing={3}>
                           <DesktopDatePicker
-                            inputFormat="yyyy/MM/dd"
+                            inputFormat="DD/MM/YYYY"
                             value={value}
                             onChange={onChange}
                             renderInput={(params: any) => <TextField {...params} />}
@@ -143,18 +138,16 @@ export default function RecipeReviewCard({ annotation }: { annotation: InputsNot
                     name="dueDate"
                   />
                 </Grid>
-
                 <Grid item xs={12} sx={{ marginTop: 2 }}>
                   <Typography paragraph>Priority</Typography>
-
                   <Box sx={{ minWidth: 120 }}>
                     <FormControl fullWidth>
                       <Select
                         id="select-priority"
-                        defaultValue={getValues("priority")}
+                        defaultValue={getValues("priority") || annotation.priority || "none"}
                         {...register("priority")}
                       >
-                        <MenuItem defaultChecked value="none">None</MenuItem>
+                        <MenuItem value="none"><em>None</em></MenuItem>
                         <MenuItem value="low">Low</MenuItem>
                         <MenuItem value="medium">Medium</MenuItem>
                         <MenuItem value="high">High</MenuItem>
@@ -162,7 +155,6 @@ export default function RecipeReviewCard({ annotation }: { annotation: InputsNot
                     </FormControl>
                   </Box>
                 </Grid>
-
                 <Grid
                   item
                   xs={12}
@@ -170,8 +162,27 @@ export default function RecipeReviewCard({ annotation }: { annotation: InputsNot
                   justifyContent="flex-end"
                   alignItems="flex-end"
                 >
-                  <Button type='submit' color='success' variant="contained" sx={{ marginRight: 2 }}>Save</Button>
-                  <Button color='error' variant="contained">Delete</Button>
+                  <Tooltip
+                    title={annotation.isActive ? 'Update' : 'Save' + 'annotation'}
+                    placement='top-start'
+                    sx={{ marginRight: 2 }}
+                  >
+                    <Button color='success' type="submit" variant="contained">
+                      {annotation.isActive ? 'Update' : 'Save'}
+                    </Button>
+                  </Tooltip>
+
+                  <Tooltip title="Delete" placement='top-start'>
+                    <Button
+                      color='error'
+                      variant="contained"
+                      type="button"
+                      onClick={() => removeNote(annotation.id || '')}
+                    >
+											Delete
+                    </Button>
+                  </Tooltip>
+
                 </Grid>
               </Grid>
 

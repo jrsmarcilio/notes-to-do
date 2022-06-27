@@ -1,27 +1,42 @@
 import { IconButtonProps } from "@mui/material/IconButton/IconButton";
-
-export type InputsNotes = {
-  id: string,
-  name: string,
-  notes?: string,
-  dueDate?: string | Date,
-  priority?: number | string
-};
+import { TypeOptions } from "react-toastify";
 
 export interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
 }
 
 export interface INotes {
+  id?: string;
+  isActive?: number;
   name: string;
-  notes: string;
-  dueDate: Date;
-  priority: string | number;
+  notes?: string;
+  dueDate?: string | Date;
+  priority?: string;
+  updatedAt?: string;
+  createdAt?: string;
 }
 
-export const priorityEnum = {
-  10: "none",
-  20: "low",
-  30: "medium",
-  40: "high"
+export type TypeNotes = {
+  id: string;
+  isActive?: number;
+  name: string;
+  notes?: string;
+  dueDate?: string | Date;
+  priority?: string;
+  updatedAt?: string;
+  createdAt?: string;
+};
+
+export interface IToastAlert {
+  show: boolean;
+  message: string;
+  type: TypeOptions;
+}
+
+export interface INoteContext {
+  syncNotes: INotes[];
+  addNote: (note: INotes) => void;
+  createNote: (note: INotes) => void;
+  removeNote: (id: string) => void;
+  updateNote: (note: INotes) => void;
 }

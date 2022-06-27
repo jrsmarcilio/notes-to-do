@@ -4,6 +4,10 @@ import { AppProps } from 'next/app';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { CacheProvider, EmotionCache } from '@emotion/react';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify'
+import { MovieContextProvider } from '../src/context/notes'
+
 import theme from '../src/styles/theme';
 import createEmotionCache from '../src/styles/createEmotionCache';
 import '../src/styles/globals.css'
@@ -25,7 +29,10 @@ export default function MyApp(props: MyAppProps) {
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
-        <Component {...pageProps} />
+        <MovieContextProvider>
+          <Component {...pageProps} />
+          <ToastContainer />
+        </MovieContextProvider>
       </ThemeProvider>
     </CacheProvider>
   );
