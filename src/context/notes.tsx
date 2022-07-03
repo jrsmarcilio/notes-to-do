@@ -79,9 +79,8 @@ const MovieContextProvider = ({ children }: { children: React.ReactNode }) => {
       .delete(`note/${id}`)
       .then((response: any) => {
         notify('success', response.data.message);
-        const newSyncNotes = [
-          ...syncNotes.filter((item: INotes) => item.id !== id && item),
-        ];
+        const noteIndex = syncNotes.findIndex((note) => note.id === id);
+        const newSyncNotes = [...syncNotes.splice(noteIndex, 1)];
         setSyncNotes(newSyncNotes);
       })
       .catch((error: any) =>
