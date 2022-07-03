@@ -1,5 +1,5 @@
-import { IconButtonProps } from "@mui/material/IconButton/IconButton";
-import { TypeOptions } from "react-toastify";
+import { IconButtonProps } from '@mui/material/IconButton/IconButton';
+import { TypeOptions } from 'react-toastify';
 
 export interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -14,6 +14,7 @@ export interface INotes {
   priority?: string;
   updatedAt?: string;
   createdAt?: string;
+  done?: boolean;
 }
 
 export type TypeNotes = {
@@ -25,6 +26,7 @@ export type TypeNotes = {
   priority?: string;
   updatedAt?: string;
   createdAt?: string;
+  done?: boolean;
 };
 
 export interface IToastAlert {
@@ -36,7 +38,8 @@ export interface IToastAlert {
 export interface INoteContext {
   syncNotes: INotes[];
   addNote: (note: INotes) => void;
-  createNote: (note: INotes) => void;
+  createNote: (note: INotes) => Promise<INotes | any>;
   removeNote: (id: string) => void;
-  updateNote: (note: INotes) => void;
+  changeDone: (id: string) => void;
+  clearCompletedTask: () => void;
 }

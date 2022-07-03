@@ -1,7 +1,10 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
-  reactStrictMode: true,
   experimental: {
     outputStandalone: true,
+  },
+  output: 'standalone',
+  publicRuntimeConfig: {
+    backendUrl: process.env.BACKEND_HOST,
   },
 };

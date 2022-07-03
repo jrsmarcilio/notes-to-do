@@ -1,4 +1,4 @@
-import { INotes, IToastAlert } from "../interfaces";
+import { INotes, IToastAlert } from '../interfaces';
 
 export const DefaultNote: INotes = {
   id: '',
@@ -7,6 +7,11 @@ export const DefaultNote: INotes = {
   dueDate: new Date(Date.now()),
   notes: '',
   priority: 'none',
-}
+  done: false,
+};
 
-export const DefaultToastAlert: IToastAlert = { show: false, message: '', type: 'default' };
+export const DefaultToastAlert: IToastAlert = {
+  show: false,
+  message: '',
+  type: 'default',
+};

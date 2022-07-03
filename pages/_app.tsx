@@ -5,12 +5,12 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer } from 'react-toastify'
-import { MovieContextProvider } from '../src/context/notes'
+import { ToastContainer } from 'react-toastify';
 
-import theme from '../src/styles/theme';
-import createEmotionCache from '../src/styles/createEmotionCache';
-import '../src/styles/globals.css'
+import theme from '@/styles/theme';
+import { MovieContextProvider } from '@/context/notes';
+import createEmotionCache from '@/styles/createEmotionCache';
+import '@/styles/globals.css';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
