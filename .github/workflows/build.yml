@@ -2,7 +2,7 @@ name: Build
 on:
   push:
     branches:
-      - master # or the name of your main branch
+      - main # or the name of your main branch
 jobs:
   build:
     name: Build
@@ -13,8 +13,8 @@ jobs:
           fetch-depth: 0
       - uses: sonarsource/sonarqube-scan-action@master
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: sqp_fe0f8ed501f2723bd045aeb3a3bdd6ab150e272e
+          SONAR_HOST_URL: http://localhost:9000
       # If you wish to fail your job when the Quality Gate is red, uncomment the
       # following lines. This would typically be used to fail a deployment.
       # - uses: sonarsource/sonarqube-quality-gate-action@master
